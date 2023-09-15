@@ -45,6 +45,7 @@ vector<string> tokenize(string source){
            source[i] == '(' || source[i] == ')' ||
            source[i] == '+' || source[i] == '-' ||
            source[i] == '*' || source[i] == '/' ||
+           source[i] == '<' || source[i] == '>' ||
            source[i] == '=' || source[i] == '!'){
             char ch[] = {source[i]};
             //cout << tmp << "\n" << ch << "\n";

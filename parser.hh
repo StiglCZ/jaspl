@@ -78,6 +78,7 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                 else{
                     line_result += name + to_string(labelStack.top()) + "a:\n";
                     labelStack.pop();
+                    i++;
                 }
                 switch(keyword(tokens[i])){
                     case 0:{
@@ -135,6 +136,8 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                             "\tjmp " + label + "a\n"+
                             label + ":\n";
                             }
+                        i+=2;
+                        level++;
                         break;
                     case 4:{
                         string 
@@ -163,6 +166,7 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                                 else line_result += 
                                     "\tmov eax, " + num + "\n" +
                                     "\tmov " + thing0 + ", eax\n";
+                                i++;
                             }else if(thing1 == "++"){
                                 line_result += 
                                     "\tmov eax, " + thing0 + "\n" +
