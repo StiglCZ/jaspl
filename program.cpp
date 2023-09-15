@@ -25,6 +25,7 @@ void compile(string filename, stack<string> *usings, string *output){
 int main(int argc, char* argv[]){
     string output;
     stack<string> usings;
+    //Compiling
     if(argc < 2)
         logerr("Too few args",errType::common,"File loading");
     compile(argv[1],&usings, &output);
@@ -34,6 +35,7 @@ int main(int argc, char* argv[]){
         compile(filename,&usings, &output);
     }
     output = "global _start\n_start:\n\tcall main\n\tmov eax, 1\n\txor ebx, ebx\n\tint 0x80\n" + output;
+    //Output the final code
     cout << output;
     return 0;
 }

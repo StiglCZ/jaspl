@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 using namespace std;
+//Replace util function
 int replaceAll(std::string& str, const std::string& search, const std::string& replace) {
     size_t pos = 0;
     int counter = 0;
@@ -11,19 +12,22 @@ int replaceAll(std::string& str, const std::string& search, const std::string& r
     }return counter;
 }
 vector<string> tokenize(string source){
+    //Get rid of double white characters
     while(replaceAll(source,"  "," ") > 0);
     while(replaceAll(source,"\t\t","\t") > 0);
     while(replaceAll(source,"\n\n","\n") > 0);
-    //cout << source;
     vector<string> tokens;
     string tmp = "";
     bool ignore = false, comment = false; 
     for(int i =0; i < source.length();i++){
+        //Comments with $ sign
         if(source[i] == '$')comment = true;
         if(comment){
             if(source[i] == '\n')comment = false;
             continue;
         }
+        //String syntax(string is not done yet, 
+        //but this is implmented already)
         if(source[i] == '"'){
             ignore = !ignore;
             tmp += '"';
@@ -32,6 +36,7 @@ vector<string> tokenize(string source){
                 tmp = "";
             }continue;
         }
+        //++ and -- syntax
         if(source[i] == '-' || source[i] == '+'){
             int last = tokens.size()-1;
             if(tokens[last] == "+" || tokens[last] == "-"){
@@ -40,6 +45,7 @@ vector<string> tokenize(string source){
                 continue;
             }
         }
+        //Replacing special characters crucial to gen. functionality
         if(source[i] == ';' || source[i] == ',' ||
            source[i] == '{' || source[i] == '}' ||
            source[i] == '(' || source[i] == ')' ||
@@ -47,11 +53,12 @@ vector<string> tokenize(string source){
            source[i] == '*' || source[i] == '/' ||
            source[i] == '<' || source[i] == '>' ||
            source[i] == '=' || source[i] == '!'){
+        //Converting char into string so its not broken when pushed
             char ch[] = {source[i]};
-            //cout << tmp << "\n" << ch << "\n";
             tokens.push_back(tmp);
             tokens.push_back(ch);
             tmp = "";
+        //White space characters - gone
         }else if(source[i] == ' '  ||
                  source[i] == '\n' ||
                  source[i] == '\t'){
@@ -59,6 +66,7 @@ vector<string> tokenize(string source){
             tmp = "";
         }else tmp += source[i];
     }
+    //Removing empty fields left by white spaces
     for(int i =0; i < tokens.size();i++){
         if(tokens[i] == "" || tokens[i] == " ")
         tokens.erase(tokens.begin() + i);

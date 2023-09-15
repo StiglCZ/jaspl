@@ -14,10 +14,13 @@ void logerr(string message, errType type, string position){
         cout << "\tAt:" << position << endl;
     exit(1);
 }
+//Returns if the string can be converted into a number
+//By nasm later
 bool isValidNumber(const std::string& str) {
     try {std::stod(str);return true;} 
     catch (const std::exception& e) {return false;}
 }
+//Returns index of a keyword stored as token
 int keyword(string word){
     for(int i =0; i < keywords_size;i++){
         if(word == keywords[i])
@@ -29,6 +32,7 @@ string parse_number(string token, string name){
     if(token[0] == '\\')return name + "_" + token.replace(0,1,"");
     return "dword["  + name + "_" + token + "]";
 }
+//Parses if operators
 string parse_operator(string input){
     if(input == "=")return "je";
     if(input == "!")return "jne";
@@ -41,20 +45,22 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
     stack<string> bss;
     for(int i =0; i < tokens.size();i++){
         //Detector for an object
+        //This adds the target library behind the executable
         if(tokens[i] == "use"){
-            //TODO: Add using functionality which joins the library code with the normal one
             string fileName = tokens[++i]
                 .replace(0,1,"")
                 .replace(tokens[i].size()-1,1,"");
             usingsptr->push(fileName);
-        }else if(tokens[i] == "func"){
+        //Parses function
+        }else if(tokens[i++] == "func"){
             //Getting the functions name, arugments and return type
-            string name = tokens[++i];
+            string name = tokens[i];
             int conditionCounter = 0;
             stack<int> labelStack;
             result += name + ":\n";
             stack<string> args;
             if(tokens[++i] != "(")  logerr("( token not found in function define!",errType::syntax,name);
+            //Gets arguments for the function
             while(++i < tokens.size()){
                      if(tokens[i] == ")") break;
                 else if(tokens[i] != ","){args.push(tokens[i]);
@@ -69,16 +75,20 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
             if(tokens[i] != ")")    logerr(") token not found in function define!",errType::syntax,name);
             if(tokens[++i] != "{")  logerr("Funcion opening not detected!", errType::syntax,name);
             //Getting the actual content
+
+            //Level, amount of conditions at once
             int level = 0;
             while(++i < tokens.size()){
                 string line_result = "";
+                cout << level << "\n";
                 if(tokens[i] == "{") level++;
-                else if(tokens[i] == "}")
-                if(level-- == 0)break;
-                else{
-                    line_result += name + to_string(labelStack.top()) + "a:\n";
-                    labelStack.pop();
-                    i++;
+                else if(tokens[i] == "}"){
+                    if(level-- == 0)break;
+                    else{
+                        result += name + to_string(labelStack.top()) + "a:\n";
+                        labelStack.pop();
+                        continue;
+                    }
                 }
                 switch(keyword(tokens[i])){
                     case 0:{
@@ -156,7 +166,6 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                         }
                         break;
                     default:{
-                        if(tokens[i] == ";" || tokens[i] == "}")break;
                             string thing0 = parse_number(tokens[i],name);
                             string thing1 = tokens[++i];
                             if(thing1 == "="){
