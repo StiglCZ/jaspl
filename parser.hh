@@ -36,7 +36,7 @@ string parse_number(string token, string name){
 string parse_operator(string input){
     if(input == "=")return "je";
     if(input == "!")return "jne";
-    if(input == ">")return "jb";
+    if(input == ">")return "jg";
     if(input == "<")return "jl";
     return "jnz";
 }
@@ -80,7 +80,6 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
             int level = 0;
             while(++i < tokens.size()){
                 string line_result = "";
-                cout << level << "\n";
                 if(tokens[i] == "{") level++;
                 else if(tokens[i] == "}"){
                     if(level-- == 0)break;

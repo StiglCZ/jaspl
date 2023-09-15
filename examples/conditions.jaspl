@@ -1,3 +1,20 @@
 func main(void){
-    
+    int i =1;
+    $ If i == 1 then prints a
+    if(i=1){
+        call print(97);
+    }
+    $ If i > 0 then prints b
+    if(i>0){
+        call print(98);
+    }
+    $ If i < 0 then prints c
+    if(i<0){
+        call print(99);
+    }
+    $ Expected output "ab"
+}
+func print(void, ch){
+    set 4 1 \ch 1 80;
+    return;
 }
