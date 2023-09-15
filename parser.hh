@@ -152,6 +152,46 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                             i++;
                         }
                         break;
+                    default:{
+                        if(tokens[i] == ";" || tokens[i] == "}")break;
+                            string thing0 = parse_number(tokens[i],name);
+                            string thing1 = tokens[++i];
+                            if(thing1 == "="){
+                                string num = parse_number(tokens[++i],name);
+                                if(tokens[i] == num)line_result += 
+                                    "\tmov " + thing0 + ", " + num + "\n";
+                                else line_result += 
+                                    "\tmov eax, " + num + "\n" +
+                                    "\tmov " + thing0 + ", eax\n";
+                            }else if(thing1 == "++"){
+                                line_result += 
+                                    "\tmov eax, " + thing0 + "\n" +
+                                    "\tadd eax, 1\n" +
+                                    "\tmov " + thing0 + ", eax\n";
+                            }else if(thing1 == "--"){
+                                line_result += 
+                                    "\tmov eax, " + thing0 + "\n" +
+                                    "\tsub eax, 1\n" +
+                                    "\tmov " + thing0 + ", eax\n";
+                            }else if((thing1 == "+" || thing1 == "-" ||
+                                      thing1 == "*")&&tokens[++i] == "="){
+                                if(thing1 == "+")thing1 = "add";
+                                else if(thing1 == "-") thing1 = "sub";
+                                else if(thing1 == "*") thing1 = "imul";
+                                line_result += 
+                                    "\tmov eax, " + thing0 + "\n\t" +
+                                    thing1 + " eax, " + parse_number(tokens[++i],name) +
+                                    "\n\tmov " + thing0 + ", eax\n";
+                                i++;
+                            }else if(thing1 == "/" && tokens[++i] == "="){
+                                line_result += 
+                                    "\tmov eax, " + thing0 + "\n\t" +
+                                    "\tmov ebx, " + parse_number(tokens[++i],name) +
+                                    "\n\tdiv ebx"
+                                    "\n\tmov " + thing0 + ", eax\n";
+                                i++;
+                            }
+                        }break;
                 }
                 result += line_result;
             }
