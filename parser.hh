@@ -180,11 +180,13 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                                     "\tmov eax, " + thing0 + "\n" +
                                     "\tadd eax, 1\n" +
                                     "\tmov " + thing0 + ", eax\n";
+                                    i++;
                             }else if(thing1 == "--"){
                                 line_result += 
                                     "\tmov eax, " + thing0 + "\n" +
                                     "\tsub eax, 1\n" +
                                     "\tmov " + thing0 + ", eax\n";
+                                i++;
                             }else if((thing1 == "+" || thing1 == "-" ||
                                       thing1 == "*")&&tokens[++i] == "="){
                                 if(thing1 == "+")thing1 = "add";

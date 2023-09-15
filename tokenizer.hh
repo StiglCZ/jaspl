@@ -36,6 +36,12 @@ vector<string> tokenize(string source){
                 tmp = "";
             }continue;
         }
+        if(ignore){
+            char ch[] = {source[i]};
+            tmp += ch;
+            continue;
+        }
+        
         //++ and -- syntax
         if(source[i] == '-' || source[i] == '+'){
             int last = tokens.size()-1;

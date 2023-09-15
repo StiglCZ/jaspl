@@ -1,0 +1,33 @@
+
+func main(){
+    $ Set the value of a
+    int a = 48;
+    int b = 2;
+    call print(a);
+
+    $ Increase a by 1
+    a++;
+    call print(a); $ Expected: 1
+
+    $ Add b to a
+    a+=b;
+    call print(a); $ Expected: 1 + 2 = 3
+
+    $ Multiply b by 2
+    $ and add it to a
+    b*=2;
+    a+= b;
+    call print(a); $ Expected: 3 + 2 * 2 = 7
+
+    $ Divide b by 4 and
+    $ subtract b from a
+    b/=4;
+    a-=b;
+    call print(a); $ Expected: 7 - 4/4 = 6
+}
+func print(void, ch){
+    set 4 1 \ch 1 80;
+    ch = 10;
+    set 4 1 \ch 1 80;
+    return;
+}
