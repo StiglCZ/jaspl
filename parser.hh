@@ -6,8 +6,8 @@ using namespace std;
 //cout << "\033[32m";
     //cout << "\033[37m";
 enum errType{syntax, warn, common, info};
-const int keywords_size = 5;
-const string keywords[keywords_size] = {"call","int","return","if","set"};
+const int keywords_size = 6;
+const string keywords[keywords_size] = {"call","int","return","if","set","setp"};
 void logerr(string message, errType type, string position){
     cout << message << endl;
     if(position.length() > 0)
@@ -30,6 +30,7 @@ int keyword(string word){
 string parse_number(string token, string name){
     if(isValidNumber(token))return token;
     if(token[0] == '\\')return name + "_" + token.replace(0,1,"");
+    if(token[0] == '~')return token.replace(0,1,"");
     return "dword["  + name + "_" + token + "]";
 }
 //Parses if operators
@@ -41,8 +42,8 @@ string parse_operator(string input){
     return "jnz";
 }
 string parse(vector<string> tokens,stack<string> *usingsptr){
-    string result = "";
-    stack<string> bss;
+    string result = "section .text\n";
+    stack<string> bss, data;
     for(int i =0; i < tokens.size();i++){
         //Detector for an object
         //This adds the target library behind the executable
@@ -52,9 +53,12 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                 .replace(tokens[i].size()-1,1,"");
             usingsptr->push(fileName);
         //Parses function
-        }else if(tokens[i++] == "func"){
+        }else if(tokens[i] == "arr"){
+            string s1 = tokens[++i], s2 = tokens[++i];
+            data.push(s1 + " dd " + s2+" dup(0)");
+        }else if(tokens[i] == "func"){
             //Getting the functions name, arugments and return type
-            string name = tokens[i];
+            string name = tokens[++i];
             int conditionCounter = 0;
             stack<int> labelStack;
             result += name + ":\n";
@@ -79,6 +83,7 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
             //Level, amount of conditions at once
             int level = 0;
             while(++i < tokens.size()){
+                //cout << tokens[i] << ":" << level << "\n";
                 string line_result = "";
                 if(tokens[i] == "{") level++;
                 else if(tokens[i] == "}"){
@@ -104,13 +109,10 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                     case 1:
                         bss.push(name + "_" + tokens[++i]);
                         if(tokens[++i] == "="){
-                            if(isValidNumber(tokens[++i]))
-                                line_result += 
-                                    "\tmov eax, " + tokens[i++] + "\n" +
+                            line_result += 
+                                    "\tmov eax, " + parse_number(tokens[++i],name) + "\n" +
                                     "\tmov dword[" + bss.top() + "], eax\n";
-                            else line_result += 
-                                    "\tmov eax, dword[" + name + "_" + tokens[i++] + "]\n" +
-                                    "\tmov dword[" + bss.top() + "], eax\n";
+                            i++;
                         }
                         break;
                     case 2:
@@ -162,6 +164,18 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                                 "\tmov edx, " + numb4 + "\n"+
                                 "\tint 0x"    + inter + "\n";
                             i++;
+                        }break;
+                    case 5:
+                        if(tokens[++i] == "~"){
+                            line_result += 
+                                "\tmov eax, " + parse_number(tokens[++i],name) + "\n" +
+                                "\tmov ebx, dword[eax]\n"+
+                                "\tmov "+ parse_number(tokens[++i],name) + ",ebx\n";
+                        }
+                        else{ 
+                            line_result += 
+                                "\tmov eax, " + parse_number(tokens[++i],name) + "\n" +
+                                "\tmov dword[eax], " + parse_number(tokens[++i],name) + "\n";
                         }
                         break;
                     default:{
@@ -214,6 +228,9 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
     while(bss.size()){
         result += "\t" + bss.top() + " resd 1\n";
         bss.pop();
-    }result += "section .text\n";
-    return result;
+    }result += "section .data\n";
+    while(data.size()){
+        result += "\t" + data.top() + "\n";
+        data.pop();
+    }return result;
 }
