@@ -1,0 +1,17 @@
+func main(void){
+    int h = 72;
+    int e = 101;
+    int l = 108;
+    int o = 111;
+
+    call print(h);
+    call print(e);
+    call print(l);
+    call print(l);
+    call print(o);
+}
+
+func print(void, ch){
+    set 4 1 \ch 1 80;
+    return;
+}

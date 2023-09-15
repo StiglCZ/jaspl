@@ -82,13 +82,13 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                 switch(keyword(tokens[i])){
                     case 0:{
                         //Will implement arguments later
-                        string name = tokens[++i];i++;
+                        string fname = tokens[++i];i++;
                         while(++i < tokens.size()){
                             if(tokens[i] == ")")break;
                             line_result += "\tmov eax, " + parse_number(tokens[i],name) + "\n" +
                                            "\tpush eax\n";
                         }
-                        line_result += "\tcall " + name + "\n";
+                        line_result += "\tcall " + fname + "\n";
                         i++;
                         }break;
                     case 1:

@@ -22,10 +22,12 @@ void compile(string filename, stack<string> *usings, string *output){
     vector<string> tokens = tokenize(str);
     *output += ";" + filename + "\n" + parse(tokens,usings);
 }
-int main(){
+int main(int argc, char* argv[]){
     string output;
     stack<string> usings;
-    compile("example.jaspl",&usings, &output);
+    if(argc < 2)
+        logerr("Too few args",errType::common,"File loading");
+    compile(argv[1],&usings, &output);
     while (usings.size() > 0){
         string filename = usings.top();
         usings.pop();
