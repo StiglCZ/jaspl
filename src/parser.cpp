@@ -4,11 +4,9 @@
 #include <iostream>
 #include "parser.hh"
 using namespace std;
-//cout << "\033[32m";
-    //cout << "\033[37m";
 
-const int keywords_size = 6;
-const string keywords[keywords_size] = {"call","int","return","if","set","setp"};
+const int keywords_size = 7;
+const string keywords[keywords_size] = {"call","int","return","if","set","setp","getret"};
 void logerr(string message, errType type, string position){
     cout << message << endl;
     if(position.length() > 0)
@@ -84,7 +82,6 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
             //Level, amount of conditions at once
             int level = 0;
             while(++i < tokens.size()){
-                //cout << tokens[i] << ":" << level << "\n";
                 string line_result = "";
                 if(tokens[i] == "{") level++;
                 else if(tokens[i] == "}"){
@@ -181,6 +178,14 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                                 "\tmov dword[eax], " + parse_number(tokens[i+1],name) + "\n";
                             i++;
                         }
+                        break;
+                    case 6:
+                        ++i;
+                        line_result += 
+                            "\tcmp ebx, 1\n" + (string)("")+
+                            "\tjne " + name + to_string(i-1) + "\n" +
+                            "\tmov " + parse_number(tokens[i],name) + ",eax\n" +
+                            name + to_string(i-1) + ":\n";
                         break;
                     default:{
                             string thing0 = parse_number(tokens[i],name);

@@ -1,0 +1,15 @@
+func print(void, ch){
+    set 4 1 \ch 1 80;
+    return;
+}
+func getNumber(int){
+    return 97;
+}
+func main(){
+    int i = 0;
+    call getNumber();
+    getret i;
+    set 4 1 \i 1 80;
+    call print(i);
+    return;
+}

@@ -1,6 +1,6 @@
 $ Example file (can be anything with 
 $ not defined main func)
-use "./std.jaspl"
+use "../std/std_io.jaspl"
 func main(){
     $ Call external function to print the letter
     call print(88);

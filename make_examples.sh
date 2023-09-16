@@ -11,6 +11,7 @@ for file in ./*; do
   nasm -f elf $file
 done
 for file in ./*.o; do
-   gcc -m32 -nostdlib $file -o $(basename $file .o)
+  ld $file -m elf_i386 -o $(basename $file .o)
+  #gcc -m32 -nostdlib $file -o $(basename $file .o)
 done
 rm *.o *.nasm

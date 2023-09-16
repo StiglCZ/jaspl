@@ -1,0 +1,9 @@
+use "std_io.jaspl"
+
+func main(void){
+    int i = 0;
+    call input(\i);
+    call print(i);
+    call print(10);
+    return;
+}

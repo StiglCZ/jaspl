@@ -1,0 +1,9 @@
+func input(void, chptr){
+    set 3 0 \chptr 1 80;
+    return;
+}
+
+func print(void, ch){
+    set 4 1 \ch 1 80;
+    return;
+}
