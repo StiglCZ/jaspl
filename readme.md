@@ -1,5 +1,7 @@
-# JASPL 
+# JASPL
 ## Just another stigl programming lang
+
+JASPL compiles to nasm assembly.
 
 ### Syntax:
 ```
