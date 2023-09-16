@@ -1,11 +1,11 @@
 CC=g++
 CFLAGS= -c -Wall
 
-all: mkdir bin/parser.o bin/tokenizer.o bin/jaspl
+all: mkdir bin/parser.o bin/tokenizer.o jaspl
 clean:
 	rm -rf bin
 
-bin/jaspl:
+jaspl:
 	$(CC) src/program.cpp bin/parser.o bin/tokenizer.o -o bin/jaspl
 
 bin/parser.o: src/parser.cpp
