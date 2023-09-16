@@ -18,15 +18,15 @@ vector<string> tokenize(string source){
     while(replaceAll(source,"\n\n","\n") > 0);
     vector<string> tokens;
     string tmp = "";
-    bool ignore = false, comment = false; 
-    for(int i =0; i < source.length();i++){
+    bool ignore = false, comment = false;
+    for(size_t i =0; i < source.length();i++){
         //Comments with $ sign
         if(source[i] == '$')comment = true;
         if(comment){
             if(source[i] == '\n')comment = false;
             continue;
         }
-        //String syntax(string is not done yet, 
+        //String syntax(string is not done yet,
         //but this is implmented already)
         if(source[i] == '"'){
             ignore = !ignore;
@@ -41,7 +41,6 @@ vector<string> tokenize(string source){
             tmp += ch;
             continue;
         }
-        
         //++ and -- syntax
         if(source[i] == '-' || source[i] == '+'){
             int last = tokens.size()-1;
@@ -73,7 +72,7 @@ vector<string> tokenize(string source){
         }else tmp += source[i];
     }
     //Removing empty fields left by white spaces
-    for(int i =0; i < tokens.size();i++){
+    for(size_t i =0; i < tokens.size();i++){
         if(tokens[i] == "" || tokens[i] == " ")
         tokens.erase(tokens.begin() + i);
     }

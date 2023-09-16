@@ -3,7 +3,9 @@
 #include "tokenizer.hh"
 #include "parser.hh"
 #include <string>
+#include <stack>
 #include <string.h>
+#include <iostream>
 char str[4096];
 using namespace std;
 void read_file(string filename){
