@@ -19,7 +19,7 @@ vector<string> tokenize(string source){
     vector<string> tokens;
     string tmp = "";
     bool ignore = false, comment = false; 
-    for(int i =0; i < source.length();i++){
+    for(size_t i =0; i < source.length();i++){
         //Comments with $ sign
         if(source[i] == '$')comment = true;
         if(comment){
@@ -73,7 +73,7 @@ vector<string> tokenize(string source){
         }else tmp += source[i];
     }
     //Removing empty fields left by white spaces
-    for(int i =0; i < tokens.size();i++){
+    for(size_t i =0; i < tokens.size();i++){
         if(tokens[i] == "" || tokens[i] == " ")
         tokens.erase(tokens.begin() + i);
     }

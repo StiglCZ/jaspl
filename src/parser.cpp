@@ -2,10 +2,11 @@
 #include <string>
 #include <stack>
 #include <iostream>
+#include "parser.hh"
 using namespace std;
 //cout << "\033[32m";
     //cout << "\033[37m";
-enum errType{syntax, warn, common, info};
+
 const int keywords_size = 6;
 const string keywords[keywords_size] = {"call","int","return","if","set","setp"};
 void logerr(string message, errType type, string position){
@@ -44,11 +45,12 @@ string parse_operator(string input){
 string parse(vector<string> tokens,stack<string> *usingsptr){
     string result = "section .text\n";
     stack<string> bss, data;
-    for(int i =0; i < tokens.size();i++){
+    for(size_t i =0; i < tokens.size();i++){
         //Detector for an object
         //This adds the target library behind the executable
         if(tokens[i] == "use"){
-            string fileName = tokens[++i]
+            ++i;
+            string fileName = tokens[i]
                 .replace(0,1,"")
                 .replace(tokens[i].size()-1,1,"");
             usingsptr->push(fileName);
@@ -167,15 +169,19 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                         }break;
                     case 5:
                         if(tokens[++i] == "~"){
+                            ++i;
                             line_result += 
-                                "\tmov eax, " + parse_number(tokens[++i],name) + "\n" +
+                                "\tmov eax, " + parse_number(tokens[i],name) + "\n" +
                                 "\tmov ebx, dword[eax]\n"+
-                                "\tmov "+ parse_number(tokens[++i],name) + ",ebx\n";
+                                "\tmov "+ parse_number(tokens[i+1],name) + ",ebx\n";
+                            i++;
                         }
                         else{ 
+                            ++i;
                             line_result += 
-                                "\tmov eax, " + parse_number(tokens[++i],name) + "\n" +
-                                "\tmov dword[eax], " + parse_number(tokens[++i],name) + "\n";
+                                "\tmov eax, " + parse_number(tokens[i],name) + "\n" +
+                                "\tmov dword[eax], " + parse_number(tokens[i+1],name) + "\n";
+                            i++;
                         }
                         break;
                     default:{
