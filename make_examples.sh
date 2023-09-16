@@ -1,6 +1,6 @@
 #/bin/sh
 
-rm -r example_bin
+rm -rf example_bin
 mkdir -p example_bin
 cd examples
 for file in ./*; do
