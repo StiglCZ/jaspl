@@ -5,8 +5,8 @@
 #include "parser.hh"
 using namespace std;
 
-const int keywords_size = 7;
-const string keywords[keywords_size] = {"call","int","return","if","set","setp","getret"};
+const int keywords_size = 8;
+const string keywords[keywords_size] = {"call","int","return","if","set","setp","getret","setr"};
 void logerr(string message, errType type, string position){
     cout << message << endl;
     if(position.length() > 0)
@@ -187,6 +187,10 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                             "\tmov " + parse_number(tokens[i],name) + ",eax\n" +
                             name + to_string(i-1) + ":\n";
                         break;
+                    case 7:
+                        i+=3;
+                        if(tokens[i-1] == "i")line_result += "\tint 0x" + tokens[i] + "\n";
+                        else if(tokens[i-1] == "r")line_result += "\t" + tokens[i].replace(0,1,"").replace(tokens[i].size()-1,1,"") + "\n";
                     default:{
                             string thing0 = parse_number(tokens[i],name);
                             string thing1 = tokens[++i];
