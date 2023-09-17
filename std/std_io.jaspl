@@ -1,14 +1,12 @@
-
-
-func input(void, chptr){
-    setr r "mov ebx, 0";
-    setr r "mov ecx, eax";
-    setr r "mov edx, 1";
-    setr r "mov eax, 3";
-    setr i 80;
-    return;
-}
 func print(void, ch){
     set 4 1 \ch 1 80;
+    return;
+}
+func input(void, chptr){
+    setr r "mov ebx, 0"
+    setr r "mov ecx, eax"
+    setr r "mov edx, 1"
+    setr r "mov eax, 3"
+    setr i 80
     return;
 }

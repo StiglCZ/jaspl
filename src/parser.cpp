@@ -93,8 +93,8 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                     }
                 }
                 switch(keyword(tokens[i])){
+                    //Call
                     case 0:{
-                        //Will implement arguments later
                         string fname = tokens[++i];i++;
                         while(++i < tokens.size()){
                             if(tokens[i] == ")")break;
@@ -104,6 +104,7 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                         line_result += "\tcall " + fname + "\n";
                         i++;
                         }break;
+                    //Defines a vairable
                     case 1:
                         bss.push(name + "_" + tokens[++i]);
                         if(tokens[++i] == "="){
@@ -113,22 +114,18 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                             i++;
                         }
                         break;
+                    //Return
                     case 2:
                         if(tokens[++i] == ";") line_result += "\tmov ebx, 0\n\tret\n";
-                        else if(isValidNumber(tokens[i])){
+                        else{
                             line_result +=
-                                "\tmov eax, " + tokens[i] + "\n" +
-                                "\tmov ebx, 1\n" +
-                                "\tret\n";
-                            i++;
-                        }else{
-                            line_result +=
-                                "\tmov eax, dword[" + name + "_" + tokens[i] + "]\n" +
+                                "\tmov eax, " + parse_number(tokens[i],name)+ "\n" +
                                 "\tmov ebx, 1\n" +
                                 "\tret\n";
                             i++;
                         }
                         break;
+                    //If - Used for conditions
                     case 3:{
                         if(tokens[++i] != "(") logerr("Broken syntax after the IF word",errType::syntax,name);
                         string num0 = parse_number(tokens[++i],name);
@@ -147,6 +144,7 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                         i+=2;
                         level++;
                         break;
+                    //set - Moves number to each register and does interupt 
                     case 4:{
                         string
                             numb1 = parse_number(tokens[++i],name),
@@ -162,6 +160,7 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                                 "\tint 0x"    + inter + "\n";
                             i++;
                         }break;
+                    //setp - Used for moving and getting from arrays
                     case 5:
                         if(tokens[++i] == "~"){
                             ++i;
@@ -179,6 +178,7 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                             i++;
                         }
                         break;
+                    //getret - Gets return value of a function
                     case 6:
                         ++i;
                         line_result += 
@@ -186,11 +186,14 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                             "\tjne " + name + to_string(i-1) + "\n" +
                             "\tmov " + parse_number(tokens[i],name) + ",eax\n" +
                             name + to_string(i-1) + ":\n";
+                        i++;
                         break;
+                    //setr - Insterts custom code
                     case 7:
-                        i+=3;
-                        if(tokens[i-1] == "i")line_result += "\tint 0x" + tokens[i] + "\n";
-                        else if(tokens[i-1] == "r")line_result += "\t" + tokens[i].replace(0,1,"").replace(tokens[i].size()-1,1,"") + "\n";
+                        i+=2;
+                        if(tokens[i-1] == "i")result += "\tint 0x" + tokens[i] + "\n";
+                        else if(tokens[i-1] == "r")result += "\t" + tokens[i].replace(0,1,"").replace(tokens[i].size()-1,1,"") + "\n";
+                        break;
                     default:{
                             string thing0 = parse_number(tokens[i],name);
                             string thing1 = tokens[++i];

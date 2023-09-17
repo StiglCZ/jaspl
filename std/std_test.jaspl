@@ -1,9 +1,11 @@
+use "std_util.jaspl"
 use "std_io.jaspl"
 
 func main(void){
-    int i = 0;
-    call input(\i);
-    call print(i);
-    call print(10);
+    int i =100;
+    int j;
+    call get_pointer(\i);
+    getret j;
+    call print(j);
     return;
 }

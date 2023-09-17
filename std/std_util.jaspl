@@ -1,0 +1,14 @@
+arr buffer 16
+
+func get_pointer(int, pointer){
+    setr r "mov edx, [eax]"
+    int value = 0;
+    setr r "mov dword[get_pointer_value], edx"
+    return value;
+}
+
+func exit(void, code){
+    setr r "mov ebx, [exit_code]"
+    setr r "mov eax, 1"
+    setr i 80;
+}
