@@ -3,6 +3,7 @@
 #include <stack>
 #include <iostream>
 #include "parser.hh"
+#include "common.hh"
 using namespace std;
 void logerr(string message, errType type, string position){
     cout << message << endl;
@@ -22,15 +23,6 @@ int keyword(string word){
         if(word == keywords[i])
             return i;
     }return -1;
-}
-int replaceAll2(std::string& str, const std::string& search, const std::string& replace) {
-    size_t pos = 0;
-    int counter = 0;
-    while ((pos = str.find(search, pos)) != std::string::npos) {
-        str.replace(pos, search.length(), replace);
-        pos += replace.length();
-        counter++;
-    }return counter;
 }
 string parse_number(string token, string name){
     if(isValidNumber(token))return token;
@@ -97,7 +89,7 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                         if(redirected){
                             redirected = 0;
                             labelStack.pop();
-                            replaceAll2(result,";lbl" + to_string(last_label),pipe);
+                            replaceAll(result,";lbl" + to_string(last_label),pipe);
                             //pipe = "";
                         }else{
                             //Result of this: main10a:

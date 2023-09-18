@@ -1,16 +1,8 @@
 #include <string>
 #include <vector>
+#include "common.hh"
 using namespace std;
 //Replace util function
-int replaceAll(std::string& str, const std::string& search, const std::string& replace) {
-    size_t pos = 0;
-    int counter = 0;
-    while ((pos = str.find(search, pos)) != std::string::npos) {
-        str.replace(pos, search.length(), replace);
-        pos += replace.length();
-        counter++;
-    }return counter;
-}
 vector<string> tokenize(string source){
     //Get rid of double white characters
     while(replaceAll(source,"  "," ") > 0);
