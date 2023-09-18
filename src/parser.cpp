@@ -90,7 +90,7 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                             redirected = 0;
                             labelStack.pop();
                             replaceAll(result,";lbl" + to_string(last_label),pipe);
-                            //pipe = "";
+                            pipe = "";
                         }else{
                             //Result of this: main10a:
                             result += name + to_string(labelStack.top()) + "a:\n";
@@ -134,12 +134,14 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                         }break;
                     //If - Used for conditions
                     case 3:{
+                        cout << "a\n";
                         if(tokens[++i] != "(") logerr("Broken syntax after the IF word",errType::syntax,name);
                         string num0 = parse_number(tokens[++i],name);
                         string op = parse_operator(tokens[++i]);
                         string num1 = parse_number(tokens[++i],name);
                         string label = name + to_string(conditionCounter++);
-                        labelStack.push(conditionCounter-1);
+                        cout << labelStack.size() << " " << conditionCounter-1 << "\n";
+                        labelStack.push((conditionCounter-1));
                         line_result +=
                             "\tmov eax, " + num0 + "\n" +
                             "\tmov ebx, " + num1 + "\n" +
@@ -148,6 +150,7 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                             ";lbl" + to_string(conditionCounter-1) + "\n" +
                             "\tjmp " + label + "a\n"+
                             label + ":\n";
+
                         i+=2;
                         level++;
                         }break;
