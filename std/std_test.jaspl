@@ -1,11 +1,17 @@
-use "std_util.jaspl"
-use "std_io.jaspl"
+$use "std_util.jaspl"
+$use "std_io.jaspl"
 
 func main(void){
-    int i =100;
-    int j;
-    call get_pointer(\i);
-    getret j;
-    call print(j);
-    return;
+    int exit_code = 0;
+    if(1!1){
+        exit_code = 1;
+    }else{
+        exit_code = 2;
+    }
+    call exit(exit_code);
+}
+func exit(void, code){
+    setr r "mov ebx, [exit_code]"
+    setr r "mov eax, 1"
+    setr i 80;
 }

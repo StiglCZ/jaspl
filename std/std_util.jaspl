@@ -1,5 +1,4 @@
 arr buffer 16
-
 func get_pointer(int, pointer){
     setr r "mov edx, [eax]"
     int value = 0;

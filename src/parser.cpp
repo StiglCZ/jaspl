@@ -4,9 +4,6 @@
 #include <iostream>
 #include "parser.hh"
 using namespace std;
-
-const int keywords_size = 8;
-const string keywords[keywords_size] = {"call","int","return","if","set","setp","getret","setr"};
 void logerr(string message, errType type, string position){
     cout << message << endl;
     if(position.length() > 0)
@@ -26,6 +23,15 @@ int keyword(string word){
             return i;
     }return -1;
 }
+int replaceAll2(std::string& str, const std::string& search, const std::string& replace) {
+    size_t pos = 0;
+    int counter = 0;
+    while ((pos = str.find(search, pos)) != std::string::npos) {
+        str.replace(pos, search.length(), replace);
+        pos += replace.length();
+        counter++;
+    }return counter;
+}
 string parse_number(string token, string name){
     if(isValidNumber(token))return token;
     if(token[0] == '\\')return name + "_" + token.replace(0,1,"");
@@ -43,6 +49,7 @@ string parse_operator(string input){
 string parse(vector<string> tokens,stack<string> *usingsptr){
     string result = "section .text\n";
     stack<string> bss, data;
+    string pipe = "";
     for(size_t i =0; i < tokens.size();i++){
         //Detector for an object
         //This adds the target library behind the executable
@@ -59,9 +66,9 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
         }else if(tokens[i] == "func"){
             //Getting the functions name, arugments and return type
             string name = tokens[++i];
-            int conditionCounter = 0;
+            int conditionCounter = 0;   //Condition counter counts the number of open conditions(nested if)
             stack<int> labelStack;
-            result += name + ":\n";
+            result += name + ":\n";     //Makes the label for it
             stack<string> args;
             if(tokens[++i] != "(")  logerr("( token not found in function define!",errType::syntax,name);
             //Gets arguments for the function
@@ -78,17 +85,26 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
             if(tokens[i] != ")")    logerr(") token not found in function define!",errType::syntax,name);
             if(tokens[++i] != "{")  logerr("Funcion opening not detected!", errType::syntax,name);
             //Getting the actual content
-
             //Level, amount of conditions at once
-            int level = 0;
+            int level = 0, last_label = 0;
+            bool redirected = false;
             while(++i < tokens.size()){
                 string line_result = "";
                 if(tokens[i] == "{") level++;
                 else if(tokens[i] == "}"){
                     if(level-- == 0)break;
                     else{
-                        result += name + to_string(labelStack.top()) + "a:\n";
-                        labelStack.pop();
+                        if(redirected){
+                            redirected = 0;
+                            labelStack.pop();
+                            replaceAll2(result,";lbl" + to_string(last_label),pipe);
+                            //pipe = "";
+                        }else{
+                            //Result of this: main10a:
+                            result += name + to_string(labelStack.top()) + "a:\n";
+                            last_label = labelStack.top();
+                            labelStack.pop();
+                        }
                         continue;
                     }
                 }
@@ -123,8 +139,7 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                                 "\tmov ebx, 1\n" +
                                 "\tret\n";
                             i++;
-                        }
-                        break;
+                        }break;
                     //If - Used for conditions
                     case 3:{
                         if(tokens[++i] != "(") logerr("Broken syntax after the IF word",errType::syntax,name);
@@ -137,13 +152,13 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                             "\tmov eax, " + num0 + "\n" +
                             "\tmov ebx, " + num1 + "\n" +
                             "\tcmp eax, ebx\n\t" +
-                            op + " " + label + "\n" +
+                            op + " " + label + "\n" + 
+                            ";lbl" + to_string(conditionCounter-1) + "\n" +
                             "\tjmp " + label + "a\n"+
                             label + ":\n";
-                            }
                         i+=2;
                         level++;
-                        break;
+                        }break;
                     //set - Moves number to each register and does interupt 
                     case 4:{
                         string
@@ -191,8 +206,13 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                     //setr - Insterts custom code
                     case 7:
                         i+=2;
-                        if(tokens[i-1] == "i")result += "\tint 0x" + tokens[i] + "\n";
-                        else if(tokens[i-1] == "r")result += "\t" + tokens[i].replace(0,1,"").replace(tokens[i].size()-1,1,"") + "\n";
+                        if(tokens[i-1] == "i")line_result += "\tint 0x" + tokens[i] + "\n";
+                        else if(tokens[i-1] == "r")line_result += "\t" + tokens[i].replace(0,1,"").replace(tokens[i].size()-1,1,"") + "\n";
+                        break;
+                    case 8:
+                        i++;level++;
+                        pipe = "";
+                        redirected = true;
                         break;
                     default:{
                             string thing0 = parse_number(tokens[i],name);
@@ -237,7 +257,8 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                             }
                         }break;
                 }
-                result += line_result;
+                if(redirected){pipe += line_result;}
+                else result += line_result;
             }
         }
     }result += "section .bss\n";
