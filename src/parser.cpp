@@ -40,7 +40,7 @@ string parse_operator(string input){
 }
 string parse(vector<string> tokens,stack<string> *usingsptr){
     string result = "section .text\n";
-    stack<string> bss, data;
+    stack<string> bss, data, pipes;
     string pipe = "";
     for(size_t i =0; i < tokens.size();i++){
         //Detector for an object
@@ -88,14 +88,17 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                     else{
                         if(redirected){
                             redirected = 0;
-                            labelStack.pop();
                             replaceAll(result,";lbl" + to_string(last_label),pipe);
                             pipe = "";
+                            if(labelStack.size() > 0)
+                                labelStack.pop();
+                            i++;
                         }else{
                             //Result of this: main10a:
                             result += name + to_string(labelStack.top()) + "a:\n";
                             last_label = labelStack.top();
-                            labelStack.pop();
+                            if(labelStack.size() > 0)
+                                labelStack.pop();
                         }
                         continue;
                     }
@@ -134,13 +137,11 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                         }break;
                     //If - Used for conditions
                     case 3:{
-                        cout << "a\n";
                         if(tokens[++i] != "(") logerr("Broken syntax after the IF word",errType::syntax,name);
                         string num0 = parse_number(tokens[++i],name);
                         string op = parse_operator(tokens[++i]);
                         string num1 = parse_number(tokens[++i],name);
                         string label = name + to_string(conditionCounter++);
-                        cout << labelStack.size() << " " << conditionCounter-1 << "\n";
                         labelStack.push((conditionCounter-1));
                         line_result +=
                             "\tmov eax, " + num0 + "\n" +
@@ -202,8 +203,12 @@ string parse(vector<string> tokens,stack<string> *usingsptr){
                     case 7:
                         i+=2;
                         if(tokens[i-1] == "i")line_result += "\tint 0x" + tokens[i] + "\n";
-                        else if(tokens[i-1] == "r")line_result += "\t" + tokens[i].replace(0,1,"").replace(tokens[i].size()-1,1,"") + "\n";
+                        else if(tokens[i-1] == "r")line_result += "\t" + tokens[i]
+                                    .replace(0,1,"")
+                                    .replace(tokens[i].size()-1,1,"")
+                                     + "\n";
                         break;
+                    //else
                     case 8:
                         i++;level++;
                         pipe = "";

@@ -1,0 +1,19 @@
+func main(){
+    if(1=1){
+    }else{
+
+    }
+
+    if(1=1){
+        if(0=0){
+
+        }else{
+
+        }
+    }
+}
+func exit(void, code){
+    setr r "mov ebx, [exit_code]"
+    setr r "mov eax, 1"
+    setr i 80;
+}
